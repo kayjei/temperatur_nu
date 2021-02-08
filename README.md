@@ -7,7 +7,7 @@ Detta är en custom components för att hämta temperaturer från http://tempera
 
 <h1>Installation och konfiguration</h1>
 Komponenten installeras som en custom_component eller via HACS.<br>
-Komponenten använder sig av configuration.yaml för att avgöra vilka temperaturer som ska hämtas. Konfigurationen görs som en sensor med namn på respektive sensor som argument. Namnet hämtas från http://temperatur.nu genom att välja en mätstation och använda namnet från URL.<br><br>
+Komponenten använder sig av configuration.yaml för att avgöra vilka temperaturer som ska hämtas. Konfigurationen görs som en sensor med namn på respektive sensor som argument. Namnet hämtas från http://temperatur.nu genom att välja en mätstation och använda namnet från URL. Om inget namn anges som argument kommer komponenten inte att starta.<br><br>
 
 ![alt text](https://github.com/kayjei/temperatur_nu/blob/main/temp_nu_1.JPG?raw=true)
 <br><br>
