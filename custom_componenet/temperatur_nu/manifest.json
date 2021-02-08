@@ -1,0 +1,8 @@
+{
+  "domain": "temperatur_nu",
+  "name": "Temperature from temperatur.nu",
+  "documentation": "https://github.com/kayjei/homeassistant",
+  "dependencies": [],
+  "codeowners": ["kayjei"],
+  "requirements": ["requests","xmltodict"]
+}
