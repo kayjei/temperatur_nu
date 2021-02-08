@@ -21,3 +21,5 @@ sensor:
       - toltorpsdalen
       - vikingstad
 ```
+<br><br>
+![alt text](http://wiki.temperatur.nu/images/2/27/Www.temperatur.nu.gif?raw=true)
