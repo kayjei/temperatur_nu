@@ -148,7 +148,7 @@ class SensorDevice(Entity):
     @property
     def icon(self):
         """Return the icon of the sensor"""
-        return 'mdi:coolant-temperature'
+        return 'mdi:thermometer'
 
     @property
     def device_class(self):
