@@ -3,7 +3,7 @@ Detta är en custom components för att hämta temperaturer från http://tempera
 
 <h1>Vad gör den?</h1>
 
-```temperatur_nu``` skapar en sensor i Home Assistant för varje sensor som konfigurerats att hämtas. Temperaturen uppdateras därefter var 10:e minut. Alla sensorer visas på kartan i komponenten ```map```.<br><br>
+```temperatur_nu``` skapar en sensor i Home Assistant för varje sensor som konfigurerats att hämtas. Temperaturen uppdateras därefter var 5:e minut. Alla sensorer visas på kartan i komponenten ```map```.<br><br>
 
 <h1>Installation och konfiguration</h1>
 Komponenten installeras som en custom_component eller via HACS.<br>
