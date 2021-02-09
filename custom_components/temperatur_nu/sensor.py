@@ -20,7 +20,7 @@ from homeassistant.util import Throttle
 
 _LOGGER = logging.getLogger(__name__)
 
-UPDATE_INTERVAL = datetime.timedelta(minutes=10)
+UPDATE_INTERVAL = datetime.timedelta(minutes=5)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_NAME): cv.ensure_list,
