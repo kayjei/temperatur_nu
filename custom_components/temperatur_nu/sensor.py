@@ -26,7 +26,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_NAME): cv.ensure_list,
 })
 
-BASE_URL = 'http://api.temperatur.nu/tnu_1.15.php?verbose&cli=homeassistant'
+rand = secrets.token_hex(4)
+BASE_URL = 'http://api.temperatur.nu/tnu_1.15.php?verbose&cli=homeassistant_' + rand
 PERS_JSON = '.temperatur_nu.json'
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
