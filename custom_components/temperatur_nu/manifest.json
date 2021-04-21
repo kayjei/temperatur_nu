@@ -4,6 +4,6 @@
   "documentation": "https://github.com/kayjei/homeassistant",
   "dependencies": [],
   "codeowners": ["kayjei"],
-  "requirements": ["requests","xmltodict"]
+  "requirements": ["requests","xmltodict"],
   "version": 0.14
 }
