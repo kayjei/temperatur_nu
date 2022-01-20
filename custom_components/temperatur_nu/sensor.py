@@ -52,26 +52,46 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     json_obj = ReadJson().json_data()
 
-    try:
-        poller_entity = json_obj["rss"]["channel"]["item"][0]["id"]
-        _LOGGER.debug("Creating poller device: " + poller_entity)
+    if isinstance(json_obj["rss"]["channel"]["item"], list):
+        try:
+            poller_entity = json_obj["rss"]["channel"]["item"][0]["id"]
+            _LOGGER.debug("Creating poller device: " + poller_entity)
+    
+            for res in json_obj["rss"]["channel"]["item"]:
+                friendly_name = res["title"]
+                sensor_id = res["id"]
+                temp = res["temp"]
+                lat = res["lat"]
+                lon = res["lon"]
+                lastUpdate = res["lastUpdate"]
+                _LOGGER.debug("New sensor: " + str(friendly_name))
+    
+                devices.append(SensorDevice(sensor_id, None, lat, lon, lastUpdate, friendly_name, poller_entity, URL))
+                _LOGGER.info("Adding sensor: " + str(sensor_id))
 
-        for res in json_obj["rss"]["channel"]["item"]:
-            friendly_name = res["title"]
-            sensor_id = res["id"]
-            temp = res["temp"]
-            lat = res["lat"]
-            lon = res["lon"]
-            lastUpdate = res["lastUpdate"]
+        except KeyError:
+            _LOGGER.info(json_obj["rss"]["channel"]["item"]["title"])
+
+    else:
+        try:
+            poller_entity = json_obj["rss"]["channel"]["item"]["id"]
+            _LOGGER.debug("Creating poller device: " + poller_entity)
+
+            friendly_name = json_obj["rss"]["channel"]["item"]["title"]
+            sensor_id = json_obj["rss"]["channel"]["item"]["id"]
+            temp = json_obj["rss"]["channel"]["item"]["temp"]
+            lat = json_obj["rss"]["channel"]["item"]["lat"]
+            lon = json_obj["rss"]["channel"]["item"]["lon"]
+            lastUpdate = json_obj["rss"]["channel"]["item"]["lastUpdate"]
             _LOGGER.debug("New sensor: " + str(friendly_name))
 
             devices.append(SensorDevice(sensor_id, None, lat, lon, lastUpdate, friendly_name, poller_entity, URL))
             _LOGGER.info("Adding sensor: " + str(sensor_id))
 
-        add_devices(devices)
+        except KeyError:
+            _LOGGER.info(json_obj["rss"]["channel"]["item"]["title"])
 
-    except KeyError:
-        _LOGGER.info(json_obj["rss"]["channel"]["item"]["title"])
+    add_devices(devices)
 
 class SensorDevice(Entity):
     def __init__(self, id, temperature, latitude, longitude, timestamp, name, poller_entity, url):
@@ -100,25 +120,47 @@ class SensorDevice(Entity):
             ApiRequest.call(self._url)
 
         jsonr = ReadJson().json_data()
-        try:
-            for ent in jsonr["rss"]["channel"]["item"]:
-                if ent["id"].endswith("_"):
-                    if ent["id"][:-1].lower().replace("\xe5","a").replace("\xe4","a").replace("\xf6","o").replace("-", "_").replace(".","").replace("___","_") == self._device_id:
+        if isinstance(jsonr["rss"]["channel"]["item"], list):
+            try:
+                for ent in jsonr["rss"]["channel"]["item"]:
+                    if ent["id"].endswith("_"):
+                        if ent["id"][:-1].lower().replace("\xe5","a").replace("\xe4","a").replace("\xf6","o").replace("-", "_").replace(".","").replace("___","_") == self._device_id:
+                            if ent["temp"] == 'N/A':
+                                self._state = None
+                            else:
+                                self._state = round(float(ent["temp"]), 1)
+                    elif ent["id"].lower().replace("\xe5","a").replace("\xe4","a").replace("\xf6","o").replace("-", "_").replace(".","").replace("___","_") == self._device_id:
                         if ent["temp"] == 'N/A':
                             self._state = None
                         else:
                             self._state = round(float(ent["temp"]), 1)
-                elif ent["id"].lower().replace("\xe5","a").replace("\xe4","a").replace("\xf6","o").replace("-", "_").replace(".","").replace("___","_") == self._device_id:
-                    if ent["temp"] == 'N/A':
+                        
+                        self._timestamp = ent["lastUpdate"]
+                        _LOGGER.debug("Temp is " + str(self._state) + " for " + str(self._friendly_name))
+
+            except KeyError:
+                _LOGGER.info("Key error on %s", json_obj["rss"]["channel"]["item"]["title"])
+
+        else:
+            try:
+                #ent = jsonr["rss"]["channel"]["item"]
+                if jsonr["rss"]["channel"]["item"]["id"].endswith("_"):
+                    if jsonr["rss"]["channel"]["item"]["id"][:-1].lower().replace("\xe5","a").replace("\xe4","a").replace("\xf6","o").replace("-", "_").replace(".","").replace("___","_") == self._device_id:
+                        if jsonr["rss"]["channel"]["item"]["temp"] == 'N/A':
+                            self._state = None
+                        else:
+                            self._state = round(float(ent["temp"]), 1)
+                elif jsonr["rss"]["channel"]["item"]["id"].lower().replace("\xe5","a").replace("\xe4","a").replace("\xf6","o").replace("-", "_").replace(".","").replace("___","_") == self._device_id:
+                    if jsonr["rss"]["channel"]["item"]["temp"] == 'N/A':
                         self._state = None
                     else:
-                        self._state = round(float(ent["temp"]), 1)
+                        self._state = round(float(jsonr["rss"]["channel"]["item"]["temp"]), 1)
                     
-                    self._timestamp = ent["lastUpdate"]
+                    self._timestamp = jsonr["rss"]["channel"]["item"]["lastUpdate"]
                     _LOGGER.debug("Temp is " + str(self._state) + " for " + str(self._friendly_name))
 
-        except KeyError:
-            _LOGGER.info(json_obj["rss"]["channel"]["item"]["title"])
+            except KeyError:
+                _LOGGER.info("Key error on single sensor %s", json_obj["rss"]["channel"]["item"]["title"])
 
     @property
     def entity_id(self):
@@ -149,7 +191,7 @@ class SensorDevice(Entity):
     @property
     def icon(self):
         """Return the icon of the sensor"""
-        return 'mdi:thermometer'
+        return 'mdi:coolant-temperature'
 
     @property
     def device_class(self):
